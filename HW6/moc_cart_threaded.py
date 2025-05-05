@@ -405,6 +405,7 @@ class CartesianMOC:
         for iteration in range(self.max_iterations):
             # Prepare a list of all ray solve arguments
             # Parallelize over rays
+            start = time.time()
             Parallel(n_jobs=-1, prefer="threads")(
                 delayed(self.solve_ray)(**offset_dict) for offset_dict in ray_args
             )
@@ -416,7 +417,10 @@ class CartesianMOC:
 
             if np.isnan(error):
                 raise
-            print(f"Iter {iteration} error: {error:.6f}")
+            elapsed_time = time.time() - start
+            print(
+                f"Iter {iteration} error: {error:.6f}, time: {elapsed_time:.2f} seconds"
+            )
             if error < tolerance:
                 print(f"Converged in {iteration} iterations with error {error:.6f}")
                 break
